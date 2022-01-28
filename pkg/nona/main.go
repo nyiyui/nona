@@ -53,11 +53,12 @@ func (s *Server) get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if err := s.l.Handle(key, r); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Printf("[log] %s: %s", key, err)
-		return
-	}
+	go func() {
+		if err := s.l.Handle(key, r); err != nil {
+			log.Printf("[log] %s: %s", key, err)
+			return
+		}
+	}()
 	w.Header().Set("Location", url)
 	w.WriteHeader(http.StatusFound)
 }

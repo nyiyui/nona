@@ -56,11 +56,15 @@ func (w *Webhook) Handle(key string, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	remote := r.RemoteAddr
+	if remote2 := r.Header.Get("X-Forwarded-For"); remote2 != "" {
+		remote = remote2
+	}
 	body := &discordgo.WebhookParams{
-		Content: key,
+		Content: fmt.Sprintf("From %s for %s", remote, key),
 		Embeds: []*discordgo.MessageEmbed{
 			{
-				Title: fmt.Sprintf("Request from %s", r.RemoteAddr),
+				Title: fmt.Sprintf("Request from %s", remote),
 				Fields: []*discordgo.MessageEmbedField{
 					{
 						Name:   "Meta",
@@ -69,7 +73,7 @@ func (w *Webhook) Handle(key string, r *http.Request) error {
 					},
 					{
 						Name:   "Remote",
-						Value:  r.RemoteAddr,
+						Value:  remote,
 						Inline: true,
 					},
 					{
