@@ -72,6 +72,11 @@ func (w *Webhook) Handle(key string, r *http.Request) error {
 						Inline: true,
 					},
 					{
+						Name:   "Key",
+						Value:  key,
+						Inline: true,
+					},
+					{
 						Name:   "Remote",
 						Value:  remote,
 						Inline: true,
